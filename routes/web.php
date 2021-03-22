@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// pesquisar uso do patch
+// Route::patch('/posts/edit/{id}', [PostController::class, 'update'])->name('posts.update');
+
+Route::put('/posts/edit/{id}', [PostController::class, 'update'])->name('posts.update');
+
 Route::get('/posts/edit/{id}', [PostController::class, 'edit'])->name('posts.edit');
 
 Route::delete('/posts/destroy/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
