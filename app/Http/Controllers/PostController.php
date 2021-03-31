@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUpdatePost;
 use App\Models\Post;
-use GuzzleHttp\Psr7\Request as Psr7Request;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::get();
-
-        //dd($posts);
+        $posts = Post::latest()->paginate(2);
 
         return view('admin.posts.index', compact('posts'));
     }
@@ -23,19 +22,30 @@ class PostController extends Controller
         return view('admin.posts.create');
     }
 
+
+
     public function store(StoreUpdatePost $request)
     {
-        Post::create($request->all());
-        //dd('Cadastrando um novo post...');
+        $data = $request->all();
+
+        if($request->image->isValid()){
+
+            // configurando o nome da imagem para ser salva igual ao do título
+            $nameFile = Str::of($request->title)->slug('-') . '.' .$request->image->getClientOriginalExtension();
+
+            $image = $request->image->storeAs('posts', $nameFile);
+            $data['image'] = $image;
+        }
+
+        Post::create($data);
+        // Post::create($request->all());
         return redirect()
                 ->route('posts.index')
-                ->with('message', 'Post Atualizado com sucesso');
+                ->with('message', 'Post Criado com sucesso');
     }
 
     public function show($id)
     {
-        // $post=Post::where('id', $id)->first();
-        // dd($post);
         //fazer verificação se esse valor existe
         if(!$post=Post::find($id)) {
             return redirect()->route('posts.index');
@@ -48,6 +58,10 @@ class PostController extends Controller
     {
         if(!$post=Post::find($id)) {
             return redirect()->route('post.index');
+        }
+
+        if(Storage::exists($post->image)){
+            Storage::delete($post->image);
         }
 
         $post->delete();
@@ -71,15 +85,40 @@ class PostController extends Controller
     public function update(StoreUpdatePost $request, $id)
     {
         //fazer verificação se esse valor existe
-        if(!$post=Post::find($id)) {
+        if(!$post=Post::find($id)){
             return redirect()->back();
         }
 
-        $post->update($request->all());
+        $data = $request->all();
+
+        if($request->image &&  $request->image->isValid()){
+
+            //se o registro tiver imagem, deleta a atual pra salvar a nova (reduzir lixo temporário no app)
+            if(Storage::exists($post->image)){
+                Storage::delete($post->image);
+            }
+
+            // configurando o nome da imagem para ser salva igual ao do título
+            $nameFile = Str::of($request->title)->slug('-') . '.' .$request->image->getClientOriginalExtension();
+
+            $image = $request->image->storeAs('posts', $nameFile);
+            $data['image'] = $image;
+        }
+
+        $post->update($data);
 
         return redirect()
                 ->route('posts.index')
-                ->with('message', 'Post Criado com sucesso');
+                ->with('message', 'Post Atualizado com sucesso');
     }
 
+    public function search (Request $request)
+    {
+        $filters = $request->except('_token');
+
+        $posts = Post::where('title', 'LIKE', "%{$request->search}%")
+                        ->orWhere('content', 'LIKE', "%{$request->search}%")
+                        ->paginate(2);
+        return view('admin.posts.index', compact('posts', 'filters'));
+    }
 }
