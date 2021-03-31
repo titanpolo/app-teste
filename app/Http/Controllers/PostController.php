@@ -112,6 +112,7 @@ class PostController extends Controller
                 ->with('message', 'Post Atualizado com sucesso');
     }
 
+    // O search é feito em todos os campos do registro, ou seja, neste caso tanto no título quanto na descricao
     public function search (Request $request)
     {
         $filters = $request->except('_token');
