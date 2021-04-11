@@ -25,6 +25,7 @@ class StoreUpdatePost extends FormRequest
     public function rules()
     {
         // utiliza o segmento 3 da url pra pegar o id (para tratar edição de post com título único)
+        //se eu mudar o path das rotas vou ter que mexer aqui
         $id = $this->segment(3);
 
         $rules = [

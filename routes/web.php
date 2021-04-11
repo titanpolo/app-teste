@@ -25,7 +25,7 @@ Route::get('/home', [Controller::class, 'menu'])->name('menu');
 Route::get('/', [Controller::class, 'welcome'])->name('welcome');
 
 // Index to read all registers
-Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index')->middleware('auth');
 
 // Index to create
 Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
