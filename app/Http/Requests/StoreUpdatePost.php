@@ -30,7 +30,7 @@ class StoreUpdatePost extends FormRequest
         $rules = [
             'title'=>['required',
                 'min:3',
-                'max:150',
+                'max:160',
                 //"unique:posts,title,{$id},id",
                 Rule::unique('posts')->ignore($id),
             ],
