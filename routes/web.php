@@ -44,8 +44,8 @@ Route::middleware(['auth'])->group(function () {
 // Index to menu
 Route::get('/home', [Controller::class, 'menu'])->name('menu');
 
-    // Index to welcome
-    Route::get('/', [Controller::class, 'welcome'])->name('welcome');
+// Index to welcome
+Route::get('/', [Controller::class, 'welcome'])->name('welcome');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
