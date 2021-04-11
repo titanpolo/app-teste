@@ -15,35 +15,37 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Search
-Route::any('/posts/search', [PostController::class, 'search'])->name('posts.search');
+Route::middleware(['auth'])->group(function () {
+    // Search
+    Route::any('/posts/search', [PostController::class, 'search'])->name('posts.search');
+
+    // Index to read all registers
+    Route::get('/posts', [PostController::class, 'index'])->name('posts.index')->middleware('auth');
+
+    // Index to create
+    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
+
+    // Create
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+
+    // Index to read one register
+    Route::get('/posts/show/{id}', [PostController::class, 'show'])->name('posts.show');
+
+    // Delete
+    Route::delete('/posts/destroy/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+    // Index to update
+    Route::get('/posts/edit/{id}', [PostController::class, 'edit'])->name('posts.edit');
+
+    // Update
+    Route::put('/posts/edit/{id}', [PostController::class, 'update'])->name('posts.update');
+});
 
 // Index to menu
 Route::get('/home', [Controller::class, 'menu'])->name('menu');
 
-// Index to welcome
-Route::get('/', [Controller::class, 'welcome'])->name('welcome');
-
-// Index to read all registers
-Route::get('/posts', [PostController::class, 'index'])->name('posts.index')->middleware('auth');
-
-// Index to create
-Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-
-// Create
-Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
-
-// Index to read one register
-Route::get('/posts/show/{id}', [PostController::class, 'show'])->name('posts.show');
-
-// Delete
-Route::delete('/posts/destroy/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
-
-// Index to update
-Route::get('/posts/edit/{id}', [PostController::class, 'edit'])->name('posts.edit');
-
-// Update
-Route::put('/posts/edit/{id}', [PostController::class, 'update'])->name('posts.update');
+    // Index to welcome
+    Route::get('/', [Controller::class, 'welcome'])->name('welcome');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
